@@ -17,7 +17,7 @@
     <h2>Follow one reading</h2>
     <p>
       The simulated device publishes an event every five seconds. The server validates and stores
-      it. The dashboard asks for recent readings every three seconds.
+      it. The dashboard asks for recent readings every ten seconds.
     </p>
     <div class="flow-summary">Device → Particle → Collector → Store → Dashboard</div>
     <a href="/" class="text-link">Explore the dashboard →</a>

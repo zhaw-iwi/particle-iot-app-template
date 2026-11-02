@@ -3,6 +3,8 @@
   import type { DashboardSnapshot, CollectorStatus } from '#lib/types.ts';
   import HistoryChart from '#lib/components/HistoryChart.svelte';
 
+  const refreshIntervalMs = 10_000;
+
   let { data } = $props();
   let snapshot = $state<DashboardSnapshot | null>(untrack(() => data.snapshot));
   let status = $state<CollectorStatus | null>(untrack(() => data.snapshot?.status ?? null));
@@ -96,7 +98,7 @@
     let timer: ReturnType<typeof setTimeout>;
     const poll = async () => {
       await refresh();
-      if (mounted) timer = setTimeout(poll, 3000);
+      if (mounted) timer = setTimeout(poll, refreshIntervalMs);
     };
     void poll();
     return () => {
@@ -209,7 +211,8 @@
     </div>
     <HistoryChart readings={visibleReadings} />
     <div class="panel-footer">
-      <span><span class="tiny-dot"></span>Updates every 3 seconds</span><button
+      <span><span class="tiny-dot"></span>Updates every {refreshIntervalMs / 1000} seconds</span
+      ><button
         class="quiet-button"
         onclick={() => {
           clearedAt = Date.now();

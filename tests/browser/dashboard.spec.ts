@@ -68,7 +68,7 @@ test('clears only the plotted view, then receives new readings and changes range
   expect(after.readings.some((reading: { id: string }) => reading.id === before.latest.id)).toBe(
     true
   );
-  await expect(page.getByRole('img', { name: 'Counter history' })).toBeVisible();
+  await expect(page.getByRole('img', { name: 'Counter history' })).toBeVisible({ timeout: 20_000 });
 
   const changedRange = page.waitForResponse((response) =>
     response.url().includes('/api/readings?minutes=15&')
@@ -95,7 +95,7 @@ test('keeps stored readings visible during a temporary API failure and recovers'
   await page.goto('/');
   await expect(page.getByRole('alert')).toContainText('Temporary test outage.');
   await expect(page.getByRole('img', { name: 'Counter history' })).toBeVisible();
-  await expect(page.getByRole('alert')).toHaveCount(0);
+  await expect(page.getByRole('alert')).toHaveCount(0, { timeout: 15_000 });
   await page.getByRole('link', { name: 'Project guide', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Make it your own.' })).toBeVisible();
   await page.getByRole('link', { name: 'Overview', exact: true }).click();

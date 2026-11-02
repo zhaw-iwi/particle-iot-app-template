@@ -28,7 +28,7 @@ Save and restart/redeploy. Verify `/api/status`, the dashboard, a fresh event, a
 
 ## Free and paid behavior
 
-As documented by Render in November 2026, a Free service sleeps after 15 minutes without incoming HTTP requests or WebSocket messages. An open dashboard polls every three seconds and generates normal incoming requests. When the dashboard closes, collection can continue until spin-down. Do not rely on the outbound Particle SSE subscription to prevent sleep.
+As documented by Render in November 2026, a Free service sleeps after 15 minutes without incoming HTTP requests or WebSocket messages. An open dashboard polls every ten seconds and generates normal incoming requests. When the dashboard closes, collection can continue until spin-down. Do not rely on the outbound Particle SSE subscription to prevent sleep.
 
 While sleeping, the collector is stopped and events are missed. A later request wakes the server, usually with a cold-start delay of roughly a minute. Mock history resets; MongoDB history remains. Free instance hours, bandwidth and build limits also apply. For a strict zero-spend setup, use only the Free instance and avoid attaching a payment method; Render documents suspension instead of overage billing when no payment method is present. Check current provider terms before deployment.
 

@@ -17,7 +17,7 @@ sequenceDiagram
     C->>C: Exact device/name check, parse, validate, fingerprint
     C->>M: Queued insert with bounded retries
   end
-  loop Every 3 seconds while dashboard is open
+  loop Every 10 seconds while dashboard is open
     B->>C: GET /api/readings and /api/status
     C->>M: Query latest + bounded history
     M-->>C: Stored readings
