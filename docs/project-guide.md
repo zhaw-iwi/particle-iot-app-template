@@ -1,4 +1,4 @@
-# Adapt the project
+# Project guide
 
 ## Understand the working example first
 
@@ -6,43 +6,50 @@ Start in mock mode. Read the variable, reset the counter, clear the chart, and w
 
 Use Git commits to save a working baseline and each meaningful change. Before asking an agent to implement, describe the physical behavior and what a person should see or control. Ask it to explain the affected files and how to test the result.
 
-## Example: soil-moisture monitor
+## The implemented counter example
 
-Write a small contract before changing code:
+The firmware, mock device, server and dashboard share this contract:
 
-| Question             | Example decision                                             |
-| -------------------- | ------------------------------------------------------------ |
-| What is measured?    | Soil moisture, calibrated from 0–100%                        |
-| Event name/data?     | `MoistureEvent`, JSON string containing `{ "moisture": 42 }` |
-| Publishing interval? | Every 30 seconds, plus relevant state changes                |
-| Variable?            | `moisture`, a numeric percentage                             |
-| History?             | Numeric moisture and timestamps, scoped to the device        |
-| Control?             | Begin with monitoring only; add watering separately          |
+| Part              | Current behavior                                                         |
+| ----------------- | ------------------------------------------------------------------------ |
+| Value             | Integer counter from 0 to 1,000,000, then wraps to zero                  |
+| Event             | `CounterEvent`, with a decimal string such as `"42"` as its data         |
+| Publication       | Every five seconds, with an additional publication requested after reset |
+| Variable          | `counter`, read on demand using **Get counter value**                    |
+| Function          | `setCounter("0")`, called using **Reset counter to 0**                   |
+| History           | Counter value, device ID, event name, publication time and receipt time  |
+| Dashboard refresh | Every ten seconds, independently of device publication                   |
 
-Then make one complete change across the layers:
+Follow a counter reading through the code:
 
-1. Change the firmware to read/calibrate the sensor and publish the chosen payload.
-2. Change `Reading` in `src/lib/types.ts` and `normalizeEvent` in `src/lib/server/readings.ts`. Parse JSON carefully and reject non-numeric/out-of-range values.
-3. Update the MongoDB document mapping, mock device, REST variable parser, chart value and labels. Changing only the UI leaves the server contract inconsistent.
-4. Change `.env.example` event/variable names. Update the payload documentation and tests.
-5. Run mock mode first, then `npm run check`, `npm test`, `npm run build` and `npm run test:smoke`. Update counter-specific smoke assertions for your new contract.
-6. Connect hardware and verify one reading through Particle Console, collector status, database and dashboard.
+1. `firmware/counter/counter.ino` increments the counter and publishes `CounterEvent`. In mock mode, `src/lib/server/mock.ts` simulates this behavior.
+2. `src/lib/server/particle/client.ts` receives the event stream from Particle Cloud. `src/lib/server/collector.ts` passes each event to `normalizeEvent` in `src/lib/server/readings.ts`.
+3. `normalizeEvent` checks the device, exact event name, numeric value and timestamp. It creates a `Reading`, defined in `src/lib/types.ts`.
+4. `src/lib/server/write-queue.ts` queues the reading. Live mode stores it through `src/lib/server/mongodb/readings.ts`; mock mode uses the in-memory repository.
+5. `src/routes/api/readings/+server.ts` returns recent stored readings and the latest value. The dashboard polls this endpoint and displays the counter card, chart and event table.
+6. The variable and reset endpoints in `src/routes/api/device/` make separate, on-demand device requests. Reading the variable does not add history; reset requests a new device publication.
 
-Existing counter documents do not automatically become moisture records. Use a new collection/database or explicitly plan a migration; never reinterpret unrelated old values silently.
+Try reading the variable, resetting the counter and clearing the chart. These are three different actions: observing the device, changing its counter, and changing only the displayed chart.
 
 ## Work with an agent
 
 Follow [agent setup](agentic-coding.md), then try:
 
-> Use the add-iot-feature skill. Replace the counter example with the moisture contract above. Preserve server-only credentials, mock mode and single-instance collection. Explain the changes and how I can verify one reading end to end.
+> Trace the existing CounterEvent from the Photon 2 firmware through validation and storage to the dashboard. Explain how the counter variable read and reset function differ from event collection. Point me to the relevant files without changing the code.
 
 Useful follow-ups:
 
 - “Explain why the variable card and latest-event card can show different values.”
 - “Show what happens when the database is unavailable and how I can detect dropped readings.”
-- “Help me add a firmware-enforced watering timeout before adding a public watering button.”
+- “Explain why clearing the chart does not reset the counter or delete stored readings.”
 
 Never paste `.env`, tokens or database passwords into a prompt. Share variable names and sanitized diagnostics instead. Inspect the diff and ask the agent to explain code you do not understand. The goal is to build an application you can describe and demonstrate.
+
+## Adapt the counter to another application
+
+When you are ready to change the project, use the `add-iot-feature` skill and describe the new event payload, measurement type, unit, range, publication frequency and any device commands. These would be changes to the counter implementation described above.
+
+Update the firmware, shared `Reading` type, validation, MongoDB mapping, mock device, UI and documentation together. Plan how to handle existing counter records if the schema changes. Verify the revised contract in mock mode before connecting hardware. For actuators, enforce operating limits and a disconnected safe state in firmware.
 
 ## Demonstrate your project
 

@@ -1,6 +1,6 @@
 # Deploy on Render
 
-The agreed deployment target is a persistent Node server on **Render**, rather than Netlify Functions. A long-lived outbound Particle SSE subscription does not fit a short-lived serverless invocation. No Particle webhook or separate collector service is required.
+The deployment target is a persistent Node server on **Render**. It maintains a long-lived outbound Particle SSE subscription. No Particle webhook or separate collector service is required.
 
 ## Deploy a mock demonstration
 

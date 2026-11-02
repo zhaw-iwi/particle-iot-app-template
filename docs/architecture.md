@@ -44,7 +44,7 @@ The application starts even if Particle or MongoDB is temporarily unavailable. I
 | `server/runtime.ts`                        | Compose integrations once; supply dashboard snapshots                              |
 | `routes/api`                               | HTTP validation, public command budget, sanitized responses                        |
 
-Keep project-specific payload mapping in `normalizeEvent`. For example, a moisture project changes the record contract and mapping without rewriting token handling or stream reconnection. Mock and live devices implement the same small interface.
+Keep project-specific payload mapping in `normalizeEvent`. The current mapping accepts counter events; changing that contract requires updating the shared reading type and storage mapping without rewriting token handling or stream reconnection. Mock and live devices implement the same small interface.
 
 ## Persistence and resource limits
 

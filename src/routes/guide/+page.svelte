@@ -42,8 +42,9 @@
       measurement, its unit, expected range and what a button should do.
     </p>
     <blockquote>
-      “Use add-iot-feature to replace the counter with soil moisture from 0–100%. Explain the data
-      flow and show how to test it in mock mode.”
+      “Trace CounterEvent from the Photon 2 firmware through validation and storage to the
+      dashboard. Explain how reading the counter variable and resetting it differ from event
+      collection.”
     </blockquote>
   </section>
   <section class="panel guide-card">
