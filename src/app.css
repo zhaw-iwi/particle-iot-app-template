@@ -117,17 +117,6 @@ button:active:not(:disabled) {
   margin-top: auto;
   padding: 48px 12px 0;
 }
-.small-orbit {
-  border: 1px solid #6d8a72;
-  border-radius: 50%;
-  width: 35px;
-  height: 35px;
-  text-align: center;
-  line-height: 33px;
-  color: #c6e89a;
-  font-size: 22px;
-  margin-bottom: 20px;
-}
 .sidebar-bottom h2 {
   font-family: Manrope, sans-serif;
   font-size: 20px;
@@ -313,10 +302,13 @@ h1 {
 .metric-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 17px;
+  gap: 18px;
   margin: 23px 0;
 }
 .metric-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
   padding: 20px 22px;
   background: white;
   border: 1px solid var(--line);
@@ -330,6 +322,8 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-height: 26px;
+  gap: 8px;
   font-size: 9px;
   letter-spacing: 1.1px;
   font-weight: 500;
@@ -356,6 +350,7 @@ h1 {
   margin-left: 9px;
 }
 .metric-caption {
+  margin-top: auto;
   font-size: 10px;
   color: #74806b;
 }
@@ -364,9 +359,17 @@ h1 {
 }
 .workspace-grid {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(250px, 1fr);
-  gap: 19px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
   align-items: stretch;
+}
+.history-panel {
+  grid-column: span 2;
+  display: flex;
+  flex-direction: column;
+}
+.history-panel .panel-footer {
+  margin-top: auto;
 }
 .panel {
   background: white;
@@ -682,6 +685,9 @@ td:first-child {
   }
   .workspace-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .history-panel {
+    grid-column: auto;
   }
   .controls-panel {
     display: grid;

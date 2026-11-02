@@ -38,7 +38,6 @@
       </a>
     </nav>
     <div class="sidebar-bottom">
-      <div class="small-orbit" aria-hidden="true">↗</div>
       <h2>Small device.<br />Big possibilities.</h2>
       <p>Your starting point for something connected.</p>
       <div class="sidebar-footer">PARTICLE × SVELTEKIT</div>
