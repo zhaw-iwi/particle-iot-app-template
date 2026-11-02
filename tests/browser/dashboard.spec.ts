@@ -68,7 +68,7 @@ test('clears only the plotted view, then receives new readings and changes range
   expect(after.readings.some((reading: { id: string }) => reading.id === before.latest.id)).toBe(
     true
   );
-  await expect(page.getByRole('img', { name: 'Counter history' })).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole('img', { name: 'Counter history' })).toBeVisible({ timeout: 25_000 });
 
   const changedRange = page.waitForResponse((response) =>
     response.url().includes('/api/readings?minutes=15&')

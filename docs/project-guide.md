@@ -10,19 +10,20 @@ Use Git commits to save a working baseline and each meaningful change. Before as
 
 The firmware, mock device, server and dashboard share this contract:
 
-| Part              | Current behavior                                                         |
-| ----------------- | ------------------------------------------------------------------------ |
-| Value             | Integer counter from 0 to 1,000,000, then wraps to zero                  |
-| Event             | `CounterEvent`, with a decimal string such as `"42"` as its data         |
-| Publication       | Every five seconds, with an additional publication requested after reset |
-| Variable          | `counter`, read on demand using **Get counter value**                    |
-| Function          | `setCounter("0")`, called using **Reset counter to 0**                   |
-| History           | Counter value, device ID, event name, publication time and receipt time  |
-| Dashboard refresh | Every ten seconds, independently of device publication                   |
+| Part              | Current behavior                                                                              |
+| ----------------- | --------------------------------------------------------------------------------------------- |
+| Value             | Nonnegative integer counter up to 2,147,483,647; stops at that limit without wrapping         |
+| Increment         | Every 100 ms (approximately ten increments per second)                                        |
+| Event             | `CounterEvent`, with a decimal string such as `"42"` as its data                              |
+| Publication       | Every 100 increments (approximately ten seconds); reset to zero is published on the next loop |
+| Variable          | `counter`, read on demand using **Get counter value**                                         |
+| Function          | `setCounter("0")`, called using **Reset counter to 0**                                        |
+| History           | Counter value, device ID, event name, publication time and receipt time                       |
+| Dashboard refresh | Every ten seconds, independently of device publication                                        |
 
 Follow a counter reading through the code:
 
-1. `firmware/counter/counter.ino` increments the counter and publishes `CounterEvent`. In mock mode, `src/lib/server/mock.ts` simulates this behavior.
+1. `firmware/counter/counter.cpp` increments the counter and publishes `CounterEvent`. In mock mode, `src/lib/server/mock.ts` simulates this behavior.
 2. `src/lib/server/particle/client.ts` receives the event stream from Particle Cloud. `src/lib/server/collector.ts` passes each event to `normalizeEvent` in `src/lib/server/readings.ts`.
 3. `normalizeEvent` checks the device, exact event name, numeric value and timestamp. It creates a `Reading`, defined in `src/lib/types.ts`.
 4. `src/lib/server/write-queue.ts` queues the reading. Live mode stores it through `src/lib/server/mongodb/readings.ts`; mock mode uses the in-memory repository.

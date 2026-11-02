@@ -2,6 +2,7 @@ import type { AppConfig } from '../config';
 import { ParticleAuth } from './auth';
 import { ParticleError, retryAfter } from './errors';
 import { EventParser, type StreamEvent } from './events';
+import { MAX_COUNTER } from '../counter';
 
 export class ParticleClient {
   private auth: ParticleAuth;
@@ -20,7 +21,7 @@ export class ParticleClient {
     const result = await this.call(`/${encodeURIComponent(this.config.variableName)}`, {
       method: 'GET'
     });
-    if (!Number.isSafeInteger(result.result) || result.result < 0 || result.result > 1_000_000) {
+    if (!Number.isSafeInteger(result.result) || result.result < 0 || result.result > MAX_COUNTER) {
       throw new Error('Device returned an invalid counter.');
     }
     return result.result;

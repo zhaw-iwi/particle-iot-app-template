@@ -4,10 +4,11 @@ import type { StreamEvent } from './particle/events';
 import type { ReadingStore } from './readings';
 import { normalizeEvent } from './readings';
 import { pause } from './async';
+import { MAX_COUNTER } from './counter';
 
 /** Simulates the firmware, not a second set of browser-side fake readings. */
 export class MockDevice implements EventSource {
-  private counter = 60;
+  private counter = 6000;
   private publish?: (event: StreamEvent) => void;
   constructor(private config: AppConfig) {}
 
@@ -26,7 +27,7 @@ export class MockDevice implements EventSource {
     const now = Date.now();
     for (let index = 1; index <= 60; index++) {
       const reading = normalizeEvent(
-        this.event(index, new Date(now - (60 - index) * 5000)),
+        this.event(index * 100, new Date(now - (60 - index) * 10_000)),
         this.config.deviceId,
         this.config.eventName
       )!;
@@ -39,10 +40,12 @@ export class MockDevice implements EventSource {
     connected();
     try {
       while (!signal.aborted) {
-        await pause(5000, signal);
+        await pause(100, signal);
         if (signal.aborted) break;
-        this.counter = (this.counter + 1) % 1_000_001;
-        publish(this.event(this.counter));
+        if (this.counter < MAX_COUNTER) {
+          this.counter++;
+          if (this.counter % 100 === 0) publish(this.event(this.counter));
+        }
       }
     } finally {
       this.publish = undefined;

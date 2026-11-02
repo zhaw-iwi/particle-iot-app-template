@@ -45,7 +45,7 @@ try {
   const startupDeadline = Date.now() + 15_000;
   while (!logs.includes('Listening on') && !exited && Date.now() < startupDeadline) await sleep(50);
   assert(logs.includes('Listening on'), 'Production server should announce startup.');
-  await sleep(5500);
+  await sleep(11_500);
   if (exited) throw new Error(`Production server exited early:\n${logs}`);
   let response = await request('/api/readings');
   assert.equal(response.status, 200);
@@ -57,7 +57,7 @@ try {
   );
   assert.equal(snapshot.status.connection, 'connected');
   assert(snapshot.readings.length >= 61);
-  assert(snapshot.latest.counter >= 61);
+  assert(snapshot.latest.counter >= 6100);
   assert.equal((await request('/api/readings?limit=9999')).status, 400);
   assert.equal(
     (
@@ -77,7 +77,9 @@ try {
   assert.equal(response.status, 200, await response.clone().text());
   assert.equal((await response.json()).returnValue, 0);
   response = await request('/api/device/variable');
-  assert.equal((await response.json()).value, 0);
+  const valueAfterReset = (await response.json()).value;
+  // The counter continues ticking every 100 ms after reset.
+  assert(Number.isInteger(valueAfterReset) && valueAfterReset >= 0 && valueAfterReset < 100);
   snapshot = await (await request('/api/readings')).json();
   assert.equal(snapshot.latest.counter, 0);
   const html = await (await request('/')).text();

@@ -4,9 +4,9 @@
 
 Claim your Photon 2 in your own Particle account and connect it to Wi-Fi. Copy its device ID from the Particle Console. Each team should use its own account and resources rather than sharing another person's credentials.
 
-Open `firmware/counter/counter.ino` in Particle Workbench or the Particle Web IDE. Select **Photon 2** and a current supported stable Device OS for the board. Compile, then flash your own device. Flashing replaces its current application; save any existing firmware you need first.
+Use `firmware/counter/counter.cpp` as the application source in your Particle Workbench project. Select **Photon 2** and a current supported stable Device OS for the board. Compile, then flash your own device. Flashing replaces its current application; save any existing firmware you need first.
 
-The example increments a counter every five seconds, wraps at 1,000,000, exposes `counter`, registers `setCounter`, and publishes `CounterEvent` as a private event. Reset accepts only the string `"0"`; an invalid argument returns `-1`. A successful reset returns `0` and requests an event. Publications are coalesced and spaced by at least one second. Device functions run in the application context; avoid blocking `loop()` with long delays.
+The example increments a counter every 100 ms, exposes `counter`, registers `setCounter`, and publishes `CounterEvent` whenever the counter is a multiple of 100 (approximately every ten seconds). It stops incrementing at the signed 32-bit integer maximum, 2,147,483,647, rather than wrapping. The firmware function converts its argument to an integer and returns the new value; the dashboard only sends `"0"`. Resetting to zero causes a publication on the next loop. Device functions run in the application context.
 
 Check the event in Particle Console before configuring the web application. Its data should look like a decimal string, such as `"42"`. Particle adds `coreid` and `published_at` to the streamed envelope.
 

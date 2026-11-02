@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import type { Reading } from '../types';
 import type { StreamEvent } from './particle/events';
+import { MAX_COUNTER } from './counter';
 
 export interface ReadingStore {
   insert(reading: Reading): Promise<boolean>;
@@ -21,10 +22,10 @@ export function normalizeEvent(
   if (!payload || typeof payload !== 'object') throw new Error('Expected an event object.');
   const record = payload as Record<string, unknown>;
   if (record.coreid !== deviceId) return null;
-  if (typeof record.data !== 'string' || !/^\d{1,7}$/.test(record.data))
+  if (typeof record.data !== 'string' || !/^\d{1,10}$/.test(record.data))
     throw new Error('Expected an integer counter string.');
   const counter = Number(record.data);
-  if (counter > 1_000_000) throw new Error('Counter exceeds example range.');
+  if (counter > MAX_COUNTER) throw new Error('Counter exceeds the firmware integer range.');
   if (typeof record.published_at !== 'string' || !/^\d{4}-\d{2}-\d{2}T/.test(record.published_at))
     throw new Error('Missing publication timestamp.');
   const published = new Date(record.published_at);

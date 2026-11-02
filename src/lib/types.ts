@@ -3,6 +3,7 @@ export interface Reading {
   id: string;
   deviceId: string;
   eventName: string;
+  /** Nonnegative signed 32-bit integer, matching the firmware counter. */
   counter: number;
   publishedAt: string;
   receivedAt: string;

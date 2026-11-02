@@ -33,7 +33,10 @@ describe('Particle event stream', () => {
       normalizeEvent({ ...event(), event: 'CounterEvent/debug' }, device, 'CounterEvent', now)
     ).toBeNull();
   });
-  it.each(['', ' ', '-1', '2.5', 'NaN', '1000001', '1e2', '{"counter":42}'])(
+  it.each(['1000001', '2147483647'])('accepts counter %s within the firmware range', (data) => {
+    expect(normalizeEvent(event(data), device, 'CounterEvent', now)?.counter).toBe(Number(data));
+  });
+  it.each(['', ' ', '-1', '2.5', 'NaN', '2147483648', '9999999999', '1e2', '{"counter":42}'])(
     'rejects invalid payload %j',
     (data) => {
       expect(() => normalizeEvent(event(data), device, 'CounterEvent', now)).toThrow();

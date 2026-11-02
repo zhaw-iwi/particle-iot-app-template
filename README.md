@@ -23,7 +23,7 @@ cp .env.example .env
 npm run dev
 ```
 
-In PowerShell, use `Copy-Item .env.example .env`. Open the local URL printed by Vite (usually <http://127.0.0.1:5173>). On a fresh clone, `APP_MODE=mock` works even without an `.env` file. The simulated counter increments every five seconds; the dashboard refreshes every ten seconds.
+In PowerShell, use `Copy-Item .env.example .env`. Open the local URL printed by Vite (usually <http://127.0.0.1:5173>). On a fresh clone, `APP_MODE=mock` works even without an `.env` file. The simulated counter increments every 100 ms and publishes every 100 increments (approximately ten seconds), matching the firmware. The dashboard refreshes every ten seconds.
 
 To connect hardware, follow [Particle setup](docs/particle-setup.md) and [configuration](docs/configuration.md). Restart the server after changing `.env`.
 
@@ -55,7 +55,7 @@ src/lib/server/mongodb/        MongoDB client and reading repository
 src/lib/server/collector.ts    Receive → validate → queue → store
 src/lib/server/runtime.ts      One collector/store/device per server instance
 src/env.ts                    Explicit private runtime environment declarations
-firmware/counter/counter.ino   Photon 2 example firmware
+firmware/counter/counter.cpp   Photon 2 example firmware
 docs/                         Architecture, setup and project documentation
 .agents/skills/               Canonical shared agent skill
 ```

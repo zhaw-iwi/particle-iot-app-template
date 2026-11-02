@@ -46,6 +46,8 @@ The application starts even if Particle or MongoDB is temporarily unavailable. I
 
 Keep project-specific payload mapping in `normalizeEvent`. The current mapping accepts counter events; changing that contract requires updating the shared reading type and storage mapping without rewriting token handling or stream reconnection. Mock and live devices implement the same small interface.
 
+Counter values use the nonnegative range of the firmware's signed 32-bit integer, 0–2,147,483,647. `server/counter.ts` shares this limit between event validation, variable reads and the mock device. The counter stops at the integer limit instead of wrapping; reset is an explicit device command. Widening the previous one-million limit does not change the MongoDB record shape or require a data migration.
+
 ## Persistence and resource limits
 
 Live records use collection `readings`. `_id` is a SHA-256 fingerprint of device ID, exact event name, normalized publication timestamp and value. This suppresses identical duplicate observations, including an insert retried after an ambiguous acknowledgement. It is **not** a Particle-provided unique event ID: two genuinely separate identical publications in the same millisecond collapse into one record.

@@ -46,6 +46,25 @@ describe('Particle authentication and transport', () => {
     });
     expect(request.mock.calls).toHaveLength(4);
   });
+  it.each([1000001, 2147483647])('reads counter %s within the firmware range', async (value) => {
+    const request = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(tokenResponse())
+      .mockResolvedValueOnce(Response.json({ result: value }));
+    expect(await new ParticleClient(parseConfig({}), request).readCounter()).toBe(value);
+  });
+  it.each([-1, 2147483648, 1.5])(
+    'rejects variable value %s outside the counter range',
+    async (value) => {
+      const request = vi
+        .fn<typeof fetch>()
+        .mockResolvedValueOnce(tokenResponse())
+        .mockResolvedValueOnce(Response.json({ result: value }));
+      await expect(new ParticleClient(parseConfig({}), request).readCounter()).rejects.toThrow(
+        'invalid counter'
+      );
+    }
+  );
   it('parses streamed events and closes its connection', async () => {
     const config = parseConfig({});
     const frame = 'event: CounterEvent\ndata: {"data":"1"}\n\n';

@@ -11,7 +11,7 @@ sequenceDiagram
   participant B as Dashboard
   C->>P: Two-legged token exchange (server only)
   C->>P: Open authenticated device event stream
-  loop Every 5 seconds in example firmware
+  loop Approximately every 10 seconds in example firmware
     D->>P: Publish CounterEvent, data = "42"
     P-->>C: SSE event, coreid, data, published_at
     C->>C: Exact device/name check, parse, validate, fingerprint
@@ -27,7 +27,7 @@ sequenceDiagram
 
 The Particle event-name filter matches prefixes. The application checks the **exact** configured name again. It also verifies the configured device ID even though the stream URL is already device-scoped.
 
-The example accepts `data` as a decimal integer string from 0 to 1,000,000. The event envelope must include `coreid` and a valid `published_at` timestamp. A publication more than five minutes in the future is rejected. Malformed events increment a counter and do not stop subsequent collection.
+The example accepts `data` as a decimal integer string from 0 to 2,147,483,647 (the nonnegative range of the firmware’s signed 32-bit integer). The event envelope must include `coreid` and a valid `published_at` timestamp. A publication more than five minutes in the future is rejected. Malformed events increment a counter and do not stop subsequent collection.
 
 `publishedAt` is the cloud publication time. `receivedAt` records when the server processed the event. The chart uses publication time; the table displays both times in the viewer’s local timezone. Collector counters start from zero whenever the process starts; seeded mock history and earlier MongoDB records are not counted as newly saved this session.
 
